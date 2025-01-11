@@ -2,7 +2,8 @@ package database
 
 import (
 	"fmt"
-	"go-backend/internal/models"
+	products_model "go-backend/internal/models/products"
+	users_model "go-backend/internal/models/users"
 	"log"
 	"os"
 
@@ -26,7 +27,8 @@ type Config struct {
 var DB *gorm.DB
 
 var tables = []interface{}{
-	&models.User{},
+	&users_model.User{},
+	&products_model.Product{},
 }
 
 func ConnectDatabase() (*gorm.DB, error) {

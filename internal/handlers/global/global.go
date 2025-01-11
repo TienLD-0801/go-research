@@ -1,4 +1,4 @@
-package global
+package global_handlers
 
 import "github.com/gofiber/fiber/v3"
 
