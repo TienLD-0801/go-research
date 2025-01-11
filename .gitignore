@@ -42,3 +42,6 @@ Thumbs.db
 
 .nx/cache
 .nx/workspace-data
+
+docker/volumes
+.env

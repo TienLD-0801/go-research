@@ -1,0 +1,74 @@
+package database
+
+import (
+	"fmt"
+	"go-backend/internal/models"
+	"log"
+	"os"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+type Config struct {
+	Host        string
+	Port        string
+	User        string
+	DBName      string
+	Schema      string
+	SSLMode     string
+	Password    string
+	AutoMigrate bool
+	DB          *pgxpool.Pool
+}
+
+var DB *gorm.DB
+
+var tables = []interface{}{
+	&models.User{},
+}
+
+func ConnectDatabase() (*gorm.DB, error) {
+
+	config := &Config{
+		Host:        os.Getenv("DB_HOST"),
+		Port:        os.Getenv("DB_PORT"),
+		User:        os.Getenv("DB_USER"),
+		DBName:      os.Getenv("DB_NAME"),
+		Password:    os.Getenv("DB_PASSWORD"),
+		AutoMigrate: true,
+		SSLMode:     "disable",
+	}
+
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", config.Host, config.Port, config.User, config.Password, config.DBName, config.SSLMode)
+
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Unable to connect to database using GORM: %v", err)
+		return nil, err
+	}
+
+	if config.AutoMigrate {
+		err := AutoMigrateModels(DB)
+		if err != nil {
+			log.Fatalf("Error migrating database: %v", err)
+			return nil, err
+		}
+	}
+
+	log.Println("Database connected and tables migrated successfully.")
+	return DB, nil
+}
+
+func AutoMigrateModels(db *gorm.DB) error {
+	fmt.Println("Auto migrating models...")
+	for _, model := range tables {
+		err := db.AutoMigrate(model)
+		if err != nil {
+			return fmt.Errorf("failed to auto migrate model %T: %v", model, err)
+		}
+	}
+	return nil
+}

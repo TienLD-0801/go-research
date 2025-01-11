@@ -6,3 +6,7 @@ run:
 # install dependencies
 install:
 	go mod tidy
+
+# run docker
+docker-run:
+	docker compose -f docker/docker-compose.yaml up -d
