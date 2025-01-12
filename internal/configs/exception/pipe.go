@@ -1,6 +1,7 @@
-package exception
+package exception_configs
 
 import (
+	"go-backend/internal/constants"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -66,16 +67,6 @@ func (v CustomValidator) Validate(data interface{}) []RestError {
 
 func SetCustomValidatorContext(c fiber.Ctx) error {
 	cv := NewCustomValidator()
-	c.Locals("customValidator", cv)
+	c.Locals(constants.CustomValidator, cv)
 	return c.Next()
-}
-
-func GetCustomValidatorContext(c fiber.Ctx) *CustomValidator {
-	if val := c.Locals("customValidator"); val != nil {
-		if cv, ok := val.(*CustomValidator); ok {
-			return cv
-		}
-	}
-
-	return nil
 }

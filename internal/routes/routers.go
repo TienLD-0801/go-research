@@ -1,18 +1,15 @@
 package routes
 
 import (
-	global_handlers "go-backend/internal/handlers/global"
-	users_handlers "go-backend/internal/handlers/users"
+	global_handler "go-backend/app/handlers/global"
+	auth_router "go-backend/internal/routes/auth"
+	user_router "go-backend/internal/routes/user"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 func RegisterRoutes(app *fiber.App) {
-	app.Get("/", global_handlers.Index)
-
-	// User routes
-	userGroup := app.Group("/user")
-	userGroup.Get("/", users_handlers.UserHandler)
-	userGroup.Post("/", users_handlers.CreateUser)
-	userGroup.Delete("/:id", users_handlers.DeleteUser)
+	app.Get("/", global_handler.Index)
+	auth_router.AuthRouter(app)
+	user_router.UserRouter(app)
 }

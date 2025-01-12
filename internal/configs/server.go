@@ -2,9 +2,12 @@ package configs
 
 import (
 	"fmt"
-	"go-backend/internal/configs/database"
-	"go-backend/internal/configs/exception"
+	database_configs "go-backend/internal/configs/database"
+	env_configs "go-backend/internal/configs/env"
+	exception_configs "go-backend/internal/configs/exception"
+	logger_configs "go-backend/internal/configs/log"
 	"go-backend/internal/routes"
+	"go-backend/internal/utils"
 	"log"
 	"os"
 
@@ -12,11 +15,15 @@ import (
 )
 
 func ServerConfig(app *fiber.App) {
-	LoadEnv()
+	env_configs.LoadEnv()
 
-	app.Use(exception.SetCustomValidatorContext)
-	database.ConnectDatabase()
-	app.Use(Logger())
+	database_configs.ConnectDatabase()
+
+	app.Use(utils.AddJSONResponse,
+		exception_configs.SetCustomValidatorContext,
+		database_configs.AddDatabaseContext,
+		logger_configs.Logger())
+
 	routes.RegisterRoutes(app)
 
 	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))

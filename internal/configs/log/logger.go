@@ -1,4 +1,4 @@
-package configs
+package logger_configs
 
 import (
 	"github.com/gofiber/fiber/v3"

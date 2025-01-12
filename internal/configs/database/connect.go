@@ -1,12 +1,14 @@
-package database
+package database_configs
 
 import (
 	"fmt"
-	products_model "go-backend/internal/models/products"
-	users_model "go-backend/internal/models/users"
+	products_model "go-backend/app/models/products"
+	users_model "go-backend/app/models/users"
+	"go-backend/internal/constants"
 	"log"
 	"os"
 
+	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -24,7 +26,7 @@ type Config struct {
 	DB          *pgxpool.Pool
 }
 
-var DB *gorm.DB
+var Db *gorm.DB
 
 var tables = []interface{}{
 	&users_model.User{},
@@ -46,14 +48,14 @@ func ConnectDatabase() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", config.Host, config.Port, config.User, config.Password, config.DBName, config.SSLMode)
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Unable to connect to database using GORM: %v", err)
 		return nil, err
 	}
 
 	if config.AutoMigrate {
-		err := AutoMigrateModels(DB)
+		err := AutoMigrateModels(Db)
 		if err != nil {
 			log.Fatalf("Error migrating database: %v", err)
 			return nil, err
@@ -61,7 +63,7 @@ func ConnectDatabase() (*gorm.DB, error) {
 	}
 
 	log.Println("Database connected and tables migrated successfully.")
-	return DB, nil
+	return Db, nil
 }
 
 func AutoMigrateModels(db *gorm.DB) error {
@@ -73,4 +75,9 @@ func AutoMigrateModels(db *gorm.DB) error {
 		}
 	}
 	return nil
+}
+
+func AddDatabaseContext(c fiber.Ctx) error {
+	c.Locals(constants.Db, Db)
+	return c.Next()
 }
