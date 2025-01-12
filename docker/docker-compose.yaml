@@ -1,7 +1,12 @@
 x-shared-env: &shared-api-env
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: postgres
+  APP_PORT: ${APP_PORT:-4000}
+  DB_HOST: ${DB_HOST:-database}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_USER: ${DB_USER:-postgres}
+  DB_NAME: ${DB_NAME:-postgres}
+  DB_PASSWORD: ${DB_PASSWORD:-postgres}
+  DB_SSL_MODE: ${DB_SSL_MODE:-disable}
+  SECRET_KEY: ${SECRET_KEY:-123456ABCDEFGH7890}
 
 services:
   database:
@@ -9,12 +14,25 @@ services:
     restart: always
     environment:
       <<: *shared-api-env
-      PGUSER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      PGUSER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-postgres}
     ports:
       - ${DB_PORT:-5432}:${DB_PORT:-5432}
     volumes:
       - ./volumes/db/data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      <<: *shared-api-env
+    ports:
+      - ${API_PORT:-4000}:${API_PORT:-4000}
+    depends_on:
+      - database
+
 
 
