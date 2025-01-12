@@ -19,7 +19,6 @@ func VerifyToken(c fiber.Ctx) error {
 	jsonResponse := c.Locals(constants.JSONResponse).(func(c fiber.Ctx, status int, message string, data interface{}) error)
 
 	tokenString := c.Get("Authorization")
-	fmt.Println("Authorization header:", tokenString)
 
 	if tokenString == "" {
 		return jsonResponse(c, fiber.StatusUnauthorized, "Token is required", nil)
