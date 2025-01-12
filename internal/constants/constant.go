@@ -4,4 +4,5 @@ var (
 	JSONResponse    = "JSONResponse"
 	Db              = "Database"
 	CustomValidator = "CustomValidator"
+	VerifyToken     = "VerifyToken"
 )

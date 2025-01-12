@@ -2,6 +2,7 @@ package users_service
 
 import (
 	users_model "go-backend/app/models/users"
+	user_dto "go-backend/app/services/user/dto"
 	exception_configs "go-backend/internal/configs/exception"
 	"go-backend/internal/constants"
 
@@ -56,8 +57,8 @@ func (s *UserService) GetUserById(c fiber.Ctx) error {
 }
 
 func (s *UserService) CreateUser(c fiber.Ctx) error {
-	user := new(users_model.UserDTO)
-	cv := c.Locals(constants.CustomValidator).(exception_configs.CustomValidator)
+	user := new(user_dto.UserDTO)
+	cv := c.Locals(constants.CustomValidator).(*exception_configs.CustomValidator)
 	jsonResponse := c.Locals(constants.JSONResponse).(func(c fiber.Ctx, status int, message string, data interface{}) error)
 	db := c.Locals(constants.Db).(*gorm.DB)
 
@@ -69,6 +70,14 @@ func (s *UserService) CreateUser(c fiber.Ctx) error {
 
 	if len(errors) > 0 {
 		return jsonResponse(c, fiber.StatusBadRequest, "Params is not empty", errors)
+	}
+
+	var existingUser users_model.User
+
+	if err := db.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
+		return jsonResponse(c, fiber.StatusBadRequest, "Email already exists", nil)
+	} else if err != gorm.ErrRecordNotFound {
+		return jsonResponse(c, fiber.StatusInternalServerError, "Database error", nil)
 	}
 
 	hashedPassword, err := hashPassword(user.Password)
@@ -95,7 +104,7 @@ func (s *UserService) CreateUser(c fiber.Ctx) error {
 
 func (s *UserService) DeleteUser(c fiber.Ctx) error {
 	id := c.Params("id")
-	user := new(users_model.UserDTO)
+	user := new(user_dto.UserDTO)
 	jsonResponse := c.Locals(constants.JSONResponse).(func(c fiber.Ctx, status int, message string, data interface{}) error)
 	db := c.Locals(constants.Db).(*gorm.DB)
 

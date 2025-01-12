@@ -12,7 +12,7 @@ func InitUserHandler() {
 	userService = &users_service.UserService{}
 }
 
-func GetUser(c fiber.Ctx) error {
+func GetAllUser(c fiber.Ctx) error {
 	return userService.GetAllUser(c)
 }
 
