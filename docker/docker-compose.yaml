@@ -29,6 +29,7 @@ services:
   #   restart: always
   #   environment:
   #     <<: *shared-api-env
+  #     DB_HOST: database
   #   ports:
   #     - ${API_PORT:-4000}:${API_PORT:-4000}
   #   depends_on:

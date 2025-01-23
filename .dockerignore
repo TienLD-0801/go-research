@@ -1,6 +1,17 @@
 .git
+.github
+.vscode
 .gitignore
 Dockerfile
 tmp
+.env
+*.env
+cmd/.env
 
-DS_Store
+docker
+docker/*
+
+.DS_Store
+
+.env.example
+.dockerignore
