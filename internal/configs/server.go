@@ -5,7 +5,6 @@ import (
 	auth_service "go-backend/app/services/auth"
 	users_service "go-backend/app/services/user"
 	database_configs "go-backend/internal/configs/database"
-	env_configs "go-backend/internal/configs/env"
 	exception_configs "go-backend/internal/configs/exception"
 	logger_configs "go-backend/internal/configs/log"
 	"go-backend/internal/configs/version"
@@ -24,7 +23,6 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	env_configs.LoadEnv()
 	app := fiber.New()
 
 	db, err := database_configs.ConnectDatabase()
