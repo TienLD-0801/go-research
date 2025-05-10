@@ -9,4 +9,5 @@ import (
 func AuthRouter(app *fiber.App) {
 	authGroup := app.Group("/auth")
 	authGroup.Post("/login", auth_handler.Login)
+	authGroup.Post("/refreshToken", auth_handler.RefreshToken)
 }
