@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func UserRouter(app *fiber.App) {
+func UserRouter(app fiber.Router) {
 	userGroup := app.Group("/user", middlewares.VerifyToken)
 	userGroup.Get("/list", users_handler.GetAllUser)
 	userGroup.Get("/:uuid", users_handler.GetUserByUUID)
